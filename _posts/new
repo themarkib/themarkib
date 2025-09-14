@@ -1,0 +1,124 @@
+---
+title: 'FL(AWS): Basic AWS Misconfigurations and Exploitation- Part 1'
+author: paincakes
+date: 2022-12-01 20:55:00 +0800
+categories: [Cloud Pentesting, AWS]
+tags: [aws-pentesting, CTF]
+---
+
+# The flAWS Challenge
+
+![flAWS1-Intro](https://paincakes.sirv.com/Images/flaws/1.png)
+
+FLAWS is fun and interesting series of CTF-like challenges based on AWS Cloud Environment. It focuses on how simple misconfigurations or mistakes that may lead to Data Breach of the Cloud Service Customers. There are total of 6 level in this challenge, and each challenges are based on different topics in the AWS cloud environment. The best thing about this challenge is that it is completely FREE! You don't need to spend a penny while completing this challenge, although, you will need an AWS free-tier account to complete some of the levels. You can find this challenge hosted on: flaws.cloud
+
+Since this blog would have been very lengthy, I have divided this challenges in two parts, the next three level of this challenges’ write up is available [here](/posts/flaws-part-2).
+
+Now, lets get started with the first level of this challenge.
+
+## Level 1
+![Level1](https://paincakes.sirv.com/Images/flaws/2.png)
+
+### Enumeration
+This static web page maybe be hosted in an s3 bucket, therefore, static analysis or any other traditional web application analysis was not be very helpful here. So, we can start with the Domain reconnaissance with nslookup tool, again performed reverse DNS lookup which gave me the Domain Name of the server.
+
+![Enum](https://paincakes.sirv.com/Images/flaws/3.png)
+
+We get two valuable information from the Domain Recon, which were, Confirmed that this static web site is hosted on s3 bucket and the region of this server (us-west-2).
+
+### Bucket Enumeration
+
+I tried to list the contents of the buckets using `aws-cli` tool to check if it was publicly accessible, but it asked for user credentials.
+
+![Enum](https://paincakes.sirv.com/Images/flaws/4.png)
+
+Since we didn’t have any user credentials for now, I tried using --no-sign-request flag which does not require credentials to access the bucket, which was successful and the contents of bucket was listed.
+
+![Enum](https://paincakes.sirv.com/Images/flaws/5.png)
+
+The “secret-dd02c7c.html” seemed interesting, we can download that file from the bucket using the following command.
+
+![Enum](https://paincakes.sirv.com/Images/flaws/6.png)
+
+That secret file contained the link to advance to the Next Level.
+
+![Enum](https://paincakes.sirv.com/Images/flaws/7.png)
+
+### Takeaway
+On AWS S3 buckets can be used for various usage and functionalities which also includes hosting static web page similar to github.io. While using the s3 bucket some developers or cloud users sets them up without proper implementation of permissions (Making it accessible to “Everyone”), making it vulnerable to unauthorized access of the bucket’s content. Just like web applications should not allow directory listing, s3 bucket also should not allow bucket listing.
+
+
+## Level 2
+
+![Level2](https://paincakes.sirv.com/Images/flaws/9.png)
+### Enumeration
+Since this is similar to previous challenge, we need to perform DNS recon like before.
+
+![Level2](https://paincakes.sirv.com/Images/flaws/10.png)
+
+### Bucket Enumeration
+I tried performing `--no-sign-request` for this challenge as well, but it was not possible because the permission is set for this challenge.
+
+![Level2](https://paincakes.sirv.com/Images/flaws/11.png)
+
+According to the description, we will need an free-tier AWS account for this challenge. We can get a hint that (maybe) any valid AWS user can list the content of the bucket. I configured my AWS account in the `aws-cli`.
+
+![Level2](https://paincakes.sirv.com/Images/flaws/12.png)
+
+
+Now we can successfully access the content of the bucket using the AWS profile we created just now.
+
+![Level2](https://paincakes.sirv.com/Images/flaws/13.png)
+
+
+Again, Download the “secret” file from the bucket and open it on the web browser, which will contain the link to the next challenge.
+
+![Level2](https://paincakes.sirv.com/Images/flaws/14.png)
+
+### Takeaway
+This another AWS s3 bucket vulnerability/misconfiguration where developers or cloud users sets the accessibility permission of the bucket accessible to “Any Authenticated AWS users”, which they might think is accessible to the users of their account, but actually makes it accessible to anyone that has an AWS account.
+
+## Level 3
+![Level3](https://paincakes.sirv.com/Images/flaws/15.png)
+
+Since we are still dealing with s3 buckets, lets start with DNS recon and reverse DNS lookup to get the domain name.
+
+![Level3](https://paincakes.sirv.com/Images/flaws/16.png)
+
+### Bucket Enumeration
+This bucket was also accessible to everyone and no sign-in was required. But this time it was different. There was no any “secret” file this time, rather it contained another interesting file this time, which was “.git”.
+
+![Level3](https://paincakes.sirv.com/Images/flaws/17.png)
+
+We can download all the contents in the s3 bucket and we can further analyze the “.git” directory with git tool, to check if there any valuable or sensitive information or data saved in the git logs.
+
+
+![Level3](https://paincakes.sirv.com/Images/flaws/18.png)
+
+### GIT Analysis
+Using the `git log` command we can view the history of the repository like the changes committed by the developers or cloud users. Analyzing the logs, we can get a hint that a user had uploaded something sensitive in the first commit and which was removed in the current commit.
+
+![Level3](https://paincakes.sirv.com/Images/flaws/19.png)
+
+It’s not a problem! `git` is an awesome tool, we can even compare the commits and view the changes that were made between the two commits. And guess what? We found the access key and secret key of another user which was removed.
+
+![Level3](https://paincakes.sirv.com/Images/flaws/20.png)
+
+### Configuring Another User Profile
+We can use those found credentials to configure new profile in the `aws cli`.
+
+![Level3](https://paincakes.sirv.com/Images/flaws/21.png)
+
+Recalling what the description said, maybe this compromised user has permission to access other buckets. which was indeed true, we get the link to the other buckets from here.
+
+![Level3](https://paincakes.sirv.com/Images/flaws/22.png)
+
+
+### Takeaway
+Developers or cloud users often mistakenly leak AWS keys in the public and try to cover up their mistake without revoking the keys. One should always delete or inactive the AWS and Secret keys that may have been leaked or misplaced.
+
+# Until Next Time..
+
+Remaining three Levels of this challenge will be available at the next part of this series, which is available [here](/posts/flaws-part-2).
+
+Thank you for Reading.

@@ -98,7 +98,7 @@ theme_mode: # [light | dark]
 # e.g. 'https://cdn.com'
 cdn: 
 # the avatar on sidebar, support local or CORS resources
-avatar: http://localhost:4000/img/profile.jpg # string, local or CORS resources  
+avatar: https://raw.githubusercontent.com/themarkib/themarkib.github.io/refs/heads/main/img/profile.jpg # string, local or CORS resources  
 
 # The URL of the site-wide social preview image used in SEO `og:image` meta tag.
 # It can be overridden by a customized `page.image` in front matter.

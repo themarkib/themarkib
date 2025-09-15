@@ -52,8 +52,12 @@ To create a AWS bucket you can follow the below steps:
    ![](https://raw.githubusercontent.com/themarkib/themarkib/refs/heads/main/img/aws-subdomain-takeover/aws1.png)
 2. Now click on the Create Bucket button on the right side.
 3. Add the bucket name and turn on public access.
-   ![](https://miro.medium.com/v2/resize:fit:700/1*nGu5VL5HL3lqY1dDfLgC_A.png)
+   ![](https://miro.medium.com/v2/resize:fit:700/1*ArZYzdkuVnmcRuAJQpx3zA.png)
 4. Now clicking on the create bucket will be succeeded. And the website will start showing below response/error.
-   ![](https://miro.medium.com/v2/resize:fit:700/1*nGu5VL5HL3lqY1dDfLgC_A.png)
+   ![](https://miro.medium.com/v2/resize:fit:700/1*wx024AQIl8xRDxQntcmuVw.png)
 5. To host our own content or make redirection we need to go to the Properties of the bucket and enable  `Static Web Hosting`
-   ![](https://miro.medium.com/v2/resize:fit:700/1*nGu5VL5HL3lqY1dDfLgC_A.png)
+   ![](https://miro.medium.com/v2/resize:fit:700/1*0Yd7VLcokZ_Z4h36IeOFKQ.png)
+
+Successfully we have taken over the AWS s3 bucket.
+
+Thank you all for reading.
